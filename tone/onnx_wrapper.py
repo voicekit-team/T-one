@@ -23,7 +23,7 @@ class StreamingCTCModel:
     log-probabilities from audio chunks.
     """
 
-    InputType: TypeAlias = npt.NDArray[np.int32]
+    InputType: TypeAlias = npt.NDArray[np.int16]
     OutputType: TypeAlias = npt.NDArray[np.float16]
     StateType: TypeAlias = npt.NDArray[np.float16]
 
@@ -102,13 +102,8 @@ class StreamingCTCModel:
             raise ValueError(
                 f"Shape of 'audio_chunk' must be (B, {self.AUDIO_CHUNK_SAMPLES}, 1), but got {audio_chunk.shape}",
             )
-        if audio_chunk.dtype != np.int32:
-            raise ValueError(f"Incorrect dtype of 'audio_chunk': expected np.int32, but got {audio_chunk.dtype}")
-        if audio_chunk.min() < -32768 or audio_chunk.max() > 32767:
-            raise ValueError(
-                "Samples in 'audio_chunk' must be in range [-32768; 32767], "
-                f"but it is in range [{audio_chunk.min()}; {audio_chunk.max()}]",
-            )
+        if audio_chunk.dtype != np.int16:
+            raise ValueError(f"Incorrect dtype of 'audio_chunk': expected np.int16, but got {audio_chunk.dtype}")
         batch_size = audio_chunk.shape[0]
         if state is None:
             state = np.zeros((batch_size, self.STATE_SIZE), dtype=np.float16)  # Create empty initial states

@@ -48,7 +48,7 @@ class StreamingCTCPipeline:
     PADDING: int = 2400  # 300ms * 8KHz
     CHUNK_SIZE: int = StreamingCTCModel.AUDIO_CHUNK_SAMPLES
 
-    InputType: TypeAlias = npt.NDArray[np.int32]
+    InputType: TypeAlias = npt.NDArray[np.int16]
     OutputType: TypeAlias = "list[TextPhrase]"
     StateType: TypeAlias = tuple[npt.NDArray[np.float16], StreamingLogprobSplitter.StateType]
 
@@ -213,5 +213,5 @@ class StreamingCTCPipeline:
             StateType: The final state of the pipeline.
 
         """
-        audio_chunk = np.zeros((StreamingCTCPipeline.CHUNK_SIZE,), dtype=np.int32)
+        audio_chunk = np.zeros((StreamingCTCPipeline.CHUNK_SIZE,), dtype=np.int16)
         return self.forward(audio_chunk, state, is_last=True)

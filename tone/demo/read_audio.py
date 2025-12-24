@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-def read_example_audio(*, long_audio: bool = False) -> npt.NDArray[np.int32]:
+def read_example_audio(*, long_audio: bool = False) -> npt.NDArray[np.int16]:
     """Get one of two audio examples from the package."""
     audio_examples_dir = Path(__file__).parent / "audio_examples"
     if not long_audio:
@@ -22,8 +22,8 @@ def read_example_audio(*, long_audio: bool = False) -> npt.NDArray[np.int32]:
     return read_audio(audio_examples_dir / "audio_long.flac")
 
 
-def read_audio(path_to_file: Path | str) -> npt.NDArray[np.int32]:
-    """Load a mono 8kHz audio file and return it as an int32 numpy array.
+def read_audio(path_to_file: Path | str) -> npt.NDArray[np.int16]:
+    """Load a mono 8kHz audio file and return it as an int16 numpy array.
 
     Uses the `miniaudio` package for decoding. Resamples the audio file
     to mono 16-bit @ 8 kHz
@@ -32,7 +32,7 @@ def read_audio(path_to_file: Path | str) -> npt.NDArray[np.int32]:
         path_to_file (Path | str): Path to the audio file to load.
 
     Returns:
-        npt.NDArray[np.int32]: Audio samples as a 1D numpy array (dtype=int32).
+        npt.NDArray[np.int16]: Audio samples as a 1D numpy array (dtype=int16).
 
     Raises:
         ModuleNotFoundError: If `miniaudio` is not installed.
@@ -50,7 +50,7 @@ def read_audio(path_to_file: Path | str) -> npt.NDArray[np.int32]:
     audio = miniaudio.decode_file(str(path_to_file), nchannels=1, sample_rate=8000)
     assert audio.sample_rate == 8000
     assert audio.nchannels == 1
-    return np.asarray(audio.samples, dtype=np.int16).astype(np.int32)
+    return np.asarray(audio.samples, dtype=np.int16)
 
 
 def read_stream_example_audio(*, long_audio: bool = False) -> Iterator[StreamingCTCPipeline.InputType]:

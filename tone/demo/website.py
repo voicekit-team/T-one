@@ -104,7 +104,7 @@ async def websocket_stt(ws: WebSocket) -> None:
     try:
         state: StreamingCTCPipeline.StateType | None = None
         async for audio_chunk, is_last in get_chunk_stream(ws):
-            output, state = SingletonPipeline.process_chunk(audio_chunk.astype(np.int32), state, is_last=is_last)
+            output, state = SingletonPipeline.process_chunk(audio_chunk, state, is_last=is_last)
             for phrase in output:
                 await ws.send_json(
                     {

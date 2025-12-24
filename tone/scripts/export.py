@@ -74,7 +74,7 @@ class ModelToExport(torch.nn.Module):
             DUMMY_AUDIO_RANGE_MIN,
             DUMMY_AUDIO_RANGE_MAX,
             (DUMMY_BATCH_SIZE, self._signal_len, 1),
-            dtype=torch.int32,
+            dtype=torch.int16,
         )
 
         return signal, self.get_initial_state(DUMMY_BATCH_SIZE)
