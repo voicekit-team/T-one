@@ -5,7 +5,7 @@ max_batch_size: 16
 input [
   {
     name: "signal"
-    data_type: TYPE_INT32
+    data_type: TYPE_INT16
     dims: [ 2400, 1 ]
   }
 ]
