@@ -103,9 +103,18 @@ async def websocket_stt(ws: WebSocket) -> None:
     await ws.accept()
     try:
         state: StreamingCTCPipeline.StateType | None = None
+        speech_started = False
         async for audio_chunk, is_last in get_chunk_stream(ws):
             output, state = SingletonPipeline.process_chunk(audio_chunk.astype(np.int32), state, is_last=is_last)
+            if not speech_started and state[1].in_speech:
+                speech_started = True
+                await ws.send_json(
+                    {
+                        "event": "speech_start"
+                    }
+                )
             for phrase in output:
+                speech_started = False
                 await ws.send_json(
                     {
                         "event": "transcript",

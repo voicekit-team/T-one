@@ -35,6 +35,7 @@ class StreamingLogprobSplitterState:
 
     past_logprobs: npt.NDArray[np.float32] = field(default_factory=lambda: np.zeros((0, 35), dtype=np.float32))
     offset: int = 0
+    in_speech: bool = False
 
 
 class StreamingLogprobSplitter:
@@ -150,4 +151,4 @@ class StreamingLogprobSplitter:
         if not len(speech_ids):
             last_phrase = max(last_phrase, len(logprobs) - speech_expand)
         next_offset = state.offset + last_phrase
-        return (phrases, StreamingLogprobSplitterState(past_logprobs=logprobs[last_phrase:], offset=next_offset))
+        return (phrases, StreamingLogprobSplitterState(past_logprobs=logprobs[last_phrase:], offset=next_offset, in_speech=is_speech.any()))

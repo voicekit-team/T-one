@@ -296,6 +296,8 @@
             outstanding = Math.max(outstanding - 1, 0);
           } else if (msg.event === 'transcript') {
             appendTranscript(msg.phrase);
+          } else if (msg.event === 'speech_start') {
+            appendSpeechStart();
           }
         } catch (err) {
           console.error('Bad JSON', err);
@@ -402,6 +404,17 @@
             <i class="bi bi-play-fill"></i>
           </button>
         </div>
+      `;
+      dom.transcriptList.appendChild(li);
+      li.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function appendSpeechStart() {
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-start';
+      li.innerHTML = `
+        <div class="me-auto"><i>Speech start</i></div>
+        <div class="d-flex align-items-center gap-2"></div>
       `;
       dom.transcriptList.appendChild(li);
       li.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -566,6 +579,8 @@
             pushChunks();
           } else if (msg.event === 'transcript') {
             appendTranscript(msg.phrase);
+          } else if (msg.event === 'speech_start') {
+            appendSpeechStart();
           }
         } catch (err) {
           console.error('Bad JSON', err);
