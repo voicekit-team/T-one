@@ -95,6 +95,17 @@ Prepare an audio file with **Russian speech** in a common format (.wav, .mp3, .f
 
    pipeline = StreamingCTCPipeline.from_hugging_face()
    print(pipeline.forward_offline(audio))  # run offline recognition
+
+   # pass onnxruntime session options to inference: 
+   from tone.onnx_wrapper import ort
+
+   # available options & description: https://onnxruntime.ai/docs/api/python/api_summary.html#onnxruntime.SessionOptions
+   so = ort.SessionOptions()
+   so.inter_op_num_threads = 1
+   so.intra_op_num_threads = 3
+
+   pipeline = StreamingCTCPipeline.from_hugging_face(session_options=so)
+   print(pipeline.forward_offline(audio))  # run offline recognition
    ```
 
 2. See the ["Advanced usage example"](#-advanced-usage-example) section for an example of streaming.
