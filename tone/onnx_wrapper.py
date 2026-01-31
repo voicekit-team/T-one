@@ -36,18 +36,21 @@ class StreamingCTCModel:
     _ort_sess: ort.InferenceSession
 
     @classmethod
-    def from_hugging_face(cls) -> Self:
+    def from_hugging_face(cls, session_options: ort.SessionOptions | None = None) -> Self:
         """Load and initialize the model from Hugging Face Hub.
 
         Downloads the model if not present locally, and initializes
         an ONNX inference session.
+
+        Args:
+            session_options (ort.SessionOptions | None): Optional ONNX Runtime session options.
 
         Returns:
             Self: An instance of StreamingCTCModel ready for inference.
 
         """
         model_path = cls.download_from_hugging_face()
-        return cls.from_local(model_path)
+        return cls.from_local(model_path, session_options)
 
     @classmethod
     def download_from_hugging_face(cls) -> str:
@@ -63,17 +66,18 @@ class StreamingCTCModel:
         )
 
     @classmethod
-    def from_local(cls, model_path: str | Path) -> Self:
+    def from_local(cls, model_path: str | Path, session_options: ort.SessionOptions | None = None) -> Self:
         """Initialize the model from a local ONNX file.
 
         Args:
             model_path (str | Path): Path to the ONNX model file.
+            session_options (ort.SessionOptions | None): Optional ONNX Runtime session options.
 
         Returns:
             Self: An instance of StreamingCTCModel ready for inference.
 
         """
-        ort_sess = ort.InferenceSession(model_path)
+        ort_sess = ort.InferenceSession(model_path, session_options)
         return cls(ort_sess)
 
     def __init__(self, ort_sess: ort.InferenceSession) -> None:

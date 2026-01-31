@@ -95,6 +95,17 @@ docker run -it --rm -p 8080:8080 t-one
 
    pipeline = StreamingCTCPipeline.from_hugging_face()
    print(pipeline.forward_offline(audio))  # офлайн-распознавание
+
+   # запуск с передачей параметров сессии onnxruntime: 
+   from tone.onnx_wrapper import ort
+
+   # доступные опции и их описание: https://onnxruntime.ai/docs/api/python/api_summary.html#onnxruntime.SessionOptions
+   so = ort.SessionOptions()
+   so.inter_op_num_threads = 1
+   so.intra_op_num_threads = 3
+
+   pipeline = StreamingCTCPipeline.from_hugging_face(session_options=so)
+   print(pipeline.forward_offline(audio))  # офлайн-распознавание
    ```
 
 2. Пример потоковой обработки смотрите в разделе ["Расширенный пример использования"](#-расширенный-пример-использования).

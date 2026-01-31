@@ -12,7 +12,7 @@ from typing_extensions import Self, TypeAlias
 
 from tone.decoder import BeamSearchCTCDecoder, DecoderType, GreedyCTCDecoder
 from tone.logprob_splitter import StreamingLogprobSplitter
-from tone.onnx_wrapper import StreamingCTCModel
+from tone.onnx_wrapper import StreamingCTCModel, ort
 
 
 @dataclass
@@ -53,18 +53,25 @@ class StreamingCTCPipeline:
     StateType: TypeAlias = tuple[npt.NDArray[np.float16], StreamingLogprobSplitter.StateType]
 
     @classmethod
-    def from_hugging_face(cls, *, decoder_type: DecoderType = DecoderType.BEAM_SEARCH) -> Self:
+    def from_hugging_face(
+        cls,
+        *,
+        session_options: ort.SessionOptions | None = None,
+        decoder_type: DecoderType = DecoderType.BEAM_SEARCH,
+    ) -> Self:
         """Creates a pipeline instance by downloading artifacts from Hugging Face Hub.
 
         Args:
             decoder_type (DecoderType, optional): The decoding strategy to use.
                 Defaults to `DecoderType.BEAM_SEARCH`.
+            session_options (ort.SessionOptions | None, optional): ONNX Runtime session options.
+                Defaults to None.
 
         Returns:
             An initialized `StreamingCTCPipeline` instance.
 
         """
-        model = StreamingCTCModel.from_hugging_face()
+        model = StreamingCTCModel.from_hugging_face(session_options)
         logprob_splitter = StreamingLogprobSplitter()
         if decoder_type == DecoderType.GREEDY:
             decoder = GreedyCTCDecoder()
@@ -84,10 +91,16 @@ class StreamingCTCPipeline:
             copyfile(BeamSearchCTCDecoder.download_from_hugging_face(), dir_path / "kenlm.bin")
 
     @classmethod
-    def from_local(cls, dir_path: str | Path, *, decoder_type: DecoderType = DecoderType.BEAM_SEARCH) -> Self:
+    def from_local(
+        cls,
+        dir_path: str | Path,
+        *,
+        session_options: ort.SessionOptions | None = None,
+        decoder_type: DecoderType = DecoderType.BEAM_SEARCH,
+    ) -> Self:
         """Create StreamingCTCPipeline instance using artifacts from local folder."""
         dir_path = Path(dir_path)
-        model = StreamingCTCModel.from_local(dir_path / "model.onnx")
+        model = StreamingCTCModel.from_local(dir_path / "model.onnx", session_options)
         logprob_splitter = StreamingLogprobSplitter()
         if decoder_type == DecoderType.GREEDY:
             decoder = GreedyCTCDecoder()
